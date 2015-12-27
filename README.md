@@ -6,7 +6,7 @@ into those of a .po (ProDOS-order) file.  Most Apple II emulators can handle bot
 but certain utilities (with which I wanted to use existing .dsk images) assume
 ProDOS-ordered files.
 
-Usage is jut:
+Usage is just:
 
 ./dsk2po.py image.dsk
 
