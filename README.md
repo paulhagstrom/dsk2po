@@ -15,6 +15,6 @@ It just goes through 35 tracks and converts them, then ends.
 
 This can be used as an action for find, like so:
 
-find imagefolders/*/*.dsk -exec ./dsk2po.py {} \;
+find imagefolders/\*/\*.dsk -exec ./dsk2po.py {} \;
 
 ...which was mostly the point.
