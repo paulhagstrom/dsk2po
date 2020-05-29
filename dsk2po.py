@@ -27,7 +27,7 @@ def main(argv=None):
 	with open(pofilename, mode="wb") as pofile:
 		for potrack in potracks:
 			pofile.write(potrack)
-	return 1
+	return 0
 
 # From Beneath Apple ProDOS, table 3.1
 # block 000 physical 0, 2 DOS 0, E page 0, 1
