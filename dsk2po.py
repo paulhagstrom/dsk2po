@@ -1,33 +1,39 @@
 #!/usr/bin/env python3
 # unscramble dsk into po
 # Paul Hagstrom, Dec 2015
-import sys, getopt, re
+import sys, getopt, re, os
 def main(argv=None):
-	print("dsk2po - convert dsk files to po files")
+  print("dsk2po - convert dsk files to po files")
 
-	try:
-		opts, args = getopt.getopt(sys.argv[1:], '')
-	except getopt.GetoptError as err:
-		print(str(err))
-		usage()
-		return 1
-	try:
-		dskfilename = args[0]
-	except:
-		print('You need to provide the name of a DSK file to begin.')
-		return 1
+  try:
+    opts, args = getopt.getopt(sys.argv[1:], '')
+  except getopt.GetoptError as err:
+    print(str(err))
+    usage()
+    return 1
+  try:
+    dskfilename = args[0]
+  except:
+    print('You need to provide the name of a DSK file to begin.')
+    return 1
 
-	potracks = []
-	with open(dskfilename, mode="rb") as dskfile:
-		for track in range(35):
-			trackbuffer = dskfile.read(4096)
-			potracks.append(dsk2po(trackbuffer))
-	pofilename = re.sub('\.dsk$', '', dskfilename, flags=re.IGNORECASE) + ".po"
-	print('Writing po image to {}'.format(pofilename))
-	with open(pofilename, mode="wb") as pofile:
-		for potrack in potracks:
-			pofile.write(potrack)
-	return 0
+  # Handle arbitrary number of tracks (normally should be 35)
+  fileSize = os.path.getsize(dskfilename)
+  ntracks = fileSize // 4096
+  if ntracks != 35:
+    print("Warning: DSK file has non-standard {} tracks".format(ntracks))
+
+  potracks = []
+  with open(dskfilename, mode="rb") as dskfile:
+    for track in range(ntracks):
+      trackbuffer = dskfile.read(4096)
+      potracks.append(dsk2po(trackbuffer))
+  pofilename = re.sub('\.dsk$', '', dskfilename, flags=re.IGNORECASE) + ".po"
+  print('Writing po image to {}'.format(pofilename))
+  with open(pofilename, mode="wb") as pofile:
+    for potrack in potracks:
+      pofile.write(potrack)
+  return 0
 
 # From Beneath Apple ProDOS, table 3.1
 # block 000 physical 0, 2 DOS 0, E page 0, 1
@@ -45,12 +51,12 @@ def main(argv=None):
 block_map = [0, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 15]
 
 def dsk2po(trackbuffer):
-	potrack = bytearray()
-	for chunk in range(16):
-		chunk_start = 256*block_map[chunk]
-		chunk_end = chunk_start + 256
-		potrack.extend(trackbuffer[chunk_start:chunk_end])
-	return potrack
+  potrack = bytearray()
+  for chunk in range(16):
+    chunk_start = 256*block_map[chunk]
+    chunk_end = chunk_start + 256
+    potrack.extend(trackbuffer[chunk_start:chunk_end])
+  return potrack
 
 if __name__ == "__main__":
-	sys.exit(main())
+  sys.exit(main())
